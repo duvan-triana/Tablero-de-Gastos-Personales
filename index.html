@@ -1,429 +1,1060 @@
 <!DOCTYPE html>
 <html lang="es" class="dark">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Centro de Comando Financiero Personal Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            slate: {
-              850: '#111827',
-              900: '#0f172a',
-              950: '#020617'
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Centro de Comando Financiero Personal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#111827',
+                            900: '#0f172a',
+                            950: '#090d16',
+                        },
+                        emerald: {
+                            400: '#34d399',
+                            500: '#10b981',
+                        },
+                        indigo: {
+                            400: '#818cf8',
+                            500: '#6366f1',
+                        },
+                        amber: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
             }
-          }
         }
-      }
-    };
-  </script>
-  <style>
-    body {
-      background-color: #020617;
-      color: #f8fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    }
-    .glass-card {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    .tab-btn.active {
-      background-color: #2563eb;
-      color: #ffffff;
-      border-color: #3b82f6;
-    }
-  </style>
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            background-color: #090d16;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+
+        /* Glassmorphism styling */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        
+        .glass-input {
+            background: rgba(9, 13, 22, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: #f1f5f9;
+        }
+
+        .glass-input:focus {
+            border-color: #6366f1;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.25);
+        }
+
+        /* Hide number spin buttons */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        .tab-btn.active {
+            color: #818cf8;
+            border-bottom: 2px solid #6366f1;
+        }
+    </style>
 </head>
-<body class="min-h-screen pb-12 antialiased">
+<body class="text-slate-100 min-h-screen pb-24 antialiased selection:bg-indigo-500 selection:text-white">
 
-  <!-- PIN LOCK SCREEN -->
-  <div id="pinScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 px-4">
-    <div class="glass-card w-full max-w-sm rounded-2xl p-6 text-center shadow-2xl">
-      <div class="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-600/20 text-blue-500">
-        <svg class="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 2 0 002-2v-6a2 2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-      </div>
-      <h2 class="text-xl font-bold text-white">Comando Financiero</h2>
-      <p class="mt-1 text-xs text-slate-400">Ingresa tu PIN para acceder</p>
-      <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="mt-6 w-full rounded-xl border border-slate-700 bg-slate-900 py-3 text-center text-2xl font-bold tracking-widest text-white focus:border-blue-500 focus:outline-none" />
-      <button onclick="unlockApp()" class="mt-4 w-full rounded-xl bg-blue-600 py-3 text-sm font-semibold text-white transition hover:bg-blue-500">Ingresar</button>
-      <p id="pinError" class="mt-2 hidden text-xs font-medium text-red-400">PIN Incorrecto</p>
+    <!-- SECURITY PIN OVERLAY -->
+    <div id="pin-overlay" class="fixed inset-0 z-50 bg-slate-950 flex flex-col items-center justify-center p-4">
+        <div class="text-center max-w-xs w-full">
+            <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl flex items-center justify-center mx-auto mb-4 text-indigo-400 text-2xl shadow-lg shadow-indigo-500/10">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h2 class="text-xl font-bold text-white mb-1">Acceso Seguro</h2>
+            <p class="text-xs text-slate-400 mb-6">Ingresa tu PIN personal (Por defecto: <span class="text-indigo-400 font-mono font-bold">1234</span>)</p>
+
+            <div class="flex justify-center gap-3 mb-8" id="pin-dots">
+                <div class="w-3.5 h-3.5 rounded-full border border-slate-600 transition-all duration-200"></div>
+                <div class="w-3.5 h-3.5 rounded-full border border-slate-600 transition-all duration-200"></div>
+                <div class="w-3.5 h-3.5 rounded-full border border-slate-600 transition-all duration-200"></div>
+                <div class="w-3.5 h-3.5 rounded-full border border-slate-600 transition-all duration-200"></div>
+            </div>
+
+            <p id="pin-error" class="text-rose-400 text-xs mb-4 min-h-[1rem] hidden">PIN Incorrecto</p>
+
+            <div class="grid grid-cols-3 gap-3 max-w-[240px] mx-auto">
+                <button onclick="appendPin('1')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">1</button>
+                <button onclick="appendPin('2')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">2</button>
+                <button onclick="appendPin('3')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">3</button>
+                <button onclick="appendPin('4')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">4</button>
+                <button onclick="appendPin('5')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">5</button>
+                <button onclick="appendPin('6')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">6</button>
+                <button onclick="appendPin('7')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">7</button>
+                <button onclick="appendPin('8')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">8</button>
+                <button onclick="appendPin('9')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">9</button>
+                <button onclick="clearPin()" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-xs text-slate-400 font-medium active:bg-slate-800 active:scale-95 transition-all">C</button>
+                <button onclick="appendPin('0')" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-lg font-semibold active:bg-slate-800 active:scale-95 transition-all">0</button>
+                <button onclick="deletePin()" class="h-14 rounded-2xl bg-slate-900 border border-slate-800 text-slate-400 active:bg-slate-800 active:scale-95 transition-all flex items-center justify-center"><i class="fa-solid fa-backspace"></i></button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <!-- MAIN APP CONTAINER -->
-  <div id="mainApp" class="hidden">
-    <!-- HEADER -->
-    <header class="sticky top-0 z-40 border-b border-slate-800 bg-slate-950/80 backdrop-blur-md">
-      <div class="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-        <div class="flex items-center space-x-3">
-          <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 font-black text-white">FC</div>
-          <div>
-            <h1 class="text-base font-bold leading-tight text-white">Centro Financiero</h1>
-            <p class="text-xs text-slate-400" id="currentMonthYear">Control Mensual</p>
-          </div>
+    <!-- MAIN CONTAINER -->
+    <div id="app-content" class="max-w-md mx-auto px-4 pt-5 space-y-5">
+
+        <!-- HEADER & MONTH SELECTOR -->
+        <header class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-emerald-500 flex items-center justify-center text-white font-black shadow-md shadow-indigo-500/20 text-lg">
+                    ⚡
+                </div>
+                <div>
+                    <h1 class="text-base font-bold text-white leading-tight">Finanzas Pro</h1>
+                    <p class="text-[11px] text-slate-400 font-medium">Control Total Personal</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <!-- Selector de Mes -->
+                <div class="relative">
+                    <input type="month" id="month-picker" onchange="changeMonth()" class="absolute opacity-0 inset-0 w-full h-full cursor-pointer z-10">
+                    <button class="glass-card px-2.5 py-1.5 rounded-xl text-xs font-semibold text-slate-200 flex items-center gap-1.5 border border-slate-700/60 hover:bg-slate-800 transition">
+                        <i class="fa-regular fa-calendar text-indigo-400 text-xs"></i>
+                        <span id="current-month-display">Cargando...</span>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+                    </button>
+                </div>
+
+                <!-- Botón de Bloqueo / Configuración -->
+                <button onclick="lockApp()" class="w-8 h-8 rounded-xl glass-card flex items-center justify-center text-slate-400 hover:text-white transition">
+                    <i class="fa-solid fa-lock text-xs"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- TOP KPI CARD: DISPONIBLE & RITMO DIARIO -->
+        <div class="glass-card p-4 rounded-2xl bg-gradient-to-b from-slate-900/90 to-slate-900/40 relative overflow-hidden space-y-3">
+            <div class="flex justify-between items-start">
+                <div>
+                    <span class="text-[11px] text-slate-400 uppercase tracking-wider font-semibold">Disponible Operativo</span>
+                    <h2 class="text-2xl font-black text-white tracking-tight font-mono mt-0.5" id="kpi-net-available">$0</h2>
+                </div>
+                <span id="kpi-status-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                    Sostenible
+                </span>
+            </div>
+
+            <!-- Pace Meter -->
+            <div class="grid grid-cols-2 gap-2 pt-2 border-t border-slate-800/80 text-xs">
+                <div>
+                    <p class="text-[10px] text-slate-400">Límite Seguro Diario</p>
+                    <p class="font-bold text-slate-100 font-mono" id="kpi-safe-daily-limit">$0 / día</p>
+                </div>
+                <div>
+                    <p class="text-[10px] text-slate-400">Gastado Hoy</p>
+                    <p class="font-bold text-emerald-400 font-mono" id="kpi-spent-today">$0</p>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center space-x-2">
-          <button onclick="lockApp()" class="rounded-lg bg-slate-800 p-2 text-slate-400 hover:text-white" title="Bloquear">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-          </button>
+
+        <!-- NAVIGATION MODULE TABS -->
+        <nav class="flex border-b border-slate-800 text-xs font-semibold text-slate-400">
+            <button onclick="switchTab('resumen')" id="tab-btn-resumen" class="tab-btn active flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition">
+                <i class="fa-solid fa-chart-pie"></i> Resumen
+            </button>
+            <button onclick="switchTab('ingresos')" id="tab-btn-ingresos" class="tab-btn flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition">
+                <i class="fa-solid fa-wallet"></i> Ingresos
+            </button>
+            <button onclick="switchTab('deudas')" id="tab-btn-deudas" class="tab-btn flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition">
+                <i class="fa-solid fa-credit-card"></i> Deudas
+            </button>
+            <button onclick="switchTab('planes')" id="tab-btn-planes" class="tab-btn flex-1 py-2.5 text-center flex items-center justify-center gap-1.5 transition">
+                <i class="fa-solid fa-plane"></i> Planes
+            </button>
+        </nav>
+
+        <!-- MODULE 1: RESUMEN & REGISTRO DIARIO -->
+        <div id="module-resumen" class="tab-module space-y-4">
+            <!-- Cards de Control -->
+            <div class="grid grid-cols-2 gap-2.5">
+                <div class="glass-card p-3 rounded-2xl border-l-2 border-l-emerald-500">
+                    <p class="text-[10px] text-slate-400 font-medium">Ingresos Mes</p>
+                    <h4 class="text-base font-bold text-white font-mono" id="resumen-total-income">$0</h4>
+                </div>
+                <div class="glass-card p-3 rounded-2xl border-l-2 border-l-rose-500">
+                    <p class="text-[10px] text-slate-400 font-medium">Compromisos Fijos</p>
+                    <h4 class="text-base font-bold text-white font-mono" id="resumen-total-fixed">$0</h4>
+                </div>
+                <div class="glass-card p-3 rounded-2xl border-l-2 border-l-indigo-500">
+                    <p class="text-[10px] text-slate-400 font-medium">Promedio Diario Real</p>
+                    <h4 class="text-base font-bold text-white font-mono" id="resumen-daily-avg">$0</h4>
+                </div>
+                <div class="glass-card p-3 rounded-2xl border-l-2 border-l-amber-500">
+                    <p class="text-[10px] text-slate-400 font-medium">Consumo Variable Mes</p>
+                    <h4 class="text-base font-bold text-white font-mono" id="resumen-variable-spent">$0</h4>
+                </div>
+            </div>
+
+            <!-- Gráfico de Donas (Distribución de Gastos) -->
+            <div class="glass-card p-4 rounded-2xl space-y-2">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xs font-bold text-slate-200">Distribución de Gastos</h3>
+                    <span class="text-[10px] text-slate-400 font-mono" id="chart-total-expenses">$0 Total</span>
+                </div>
+                <div class="h-44 w-full flex items-center justify-center">
+                    <canvas id="categoryDoughnutChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Histórico y Filtro de Gastos Variables -->
+            <div class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xs font-bold text-slate-200 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list text-indigo-400"></i> Registro de Consumos
+                    </h3>
+                    <button onclick="openAddExpenseModal()" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 rounded-xl">
+                        <i class="fa-solid fa-plus text-[10px]"></i> Registrar Gasto
+                    </button>
+                </div>
+
+                <div class="glass-card p-2.5 rounded-xl grid grid-cols-2 gap-2 text-xs">
+                    <input type="text" id="search-expense" oninput="renderExpensesList()" placeholder="Buscar consumo..." class="col-span-2 glass-input px-3 py-1.5 rounded-xl text-xs">
+                    <select id="filter-category" onchange="renderExpensesList()" class="glass-input px-2 py-1.5 rounded-xl text-xs">
+                        <option value="ALL">Todas las Categorías</option>
+                        <option value="Comida">🍔 Comida</option>
+                        <option value="Mercado">🛒 Mercado</option>
+                        <option value="Transporte">🚗 Transporte</option>
+                        <option value="Ocio">🎬 Ocio</option>
+                        <option value="Salud">💊 Salud</option>
+                        <option value="Otros">📦 Otros</option>
+                    </select>
+                    <input type="date" id="filter-date" onchange="renderExpensesList()" class="glass-input px-2 py-1.5 rounded-xl text-xs text-slate-300">
+                </div>
+
+                <div id="expenses-timeline" class="space-y-2">
+                    <!-- Dynamic rendering -->
+                </div>
+            </div>
         </div>
-      </div>
-      <!-- NAVIGATION TABS -->
-      <nav class="flex border-t border-slate-800/80 px-2 pt-2 space-x-1 overflow-x-auto max-w-5xl mx-auto">
-        <button onclick="switchTab('overview')" id="tab-overview" class="tab-btn active flex-1 rounded-t-lg border-b-2 border-transparent px-3 py-2 text-center text-xs font-medium text-slate-400">📊 Control Diario</button>
-        <button onclick="switchTab('incomes')" id="tab-incomes" class="tab-btn flex-1 rounded-t-lg border-b-2 border-transparent px-3 py-2 text-center text-xs font-medium text-slate-400">💵 Ingresos</button>
-        <button onclick="switchTab('debts')" id="tab-debts" class="tab-btn flex-1 rounded-t-lg border-b-2 border-transparent px-3 py-2 text-center text-xs font-medium text-slate-400">🚦 Obligaciones</button>
-        <button onclick="switchTab('travel')" id="tab-travel" class="tab-btn flex-1 rounded-t-lg border-b-2 border-transparent px-3 py-2 text-center text-xs font-medium text-slate-400">✈️ Planes & Viajes</button>
-      </nav>
-    </header>
 
-    <main class="mx-auto max-w-5xl px-4 pt-6 space-y-6">
+        <!-- MODULE 2: INGRESOS MÚLTIPLES -->
+        <div id="module-ingresos" class="tab-module space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-200">Fuentes de Ingresos</h3>
+                    <p class="text-[10px] text-slate-400">Suma quincenas, prima o ingresos extra</p>
+                </div>
+                <button onclick="openAddIncomeModal()" class="text-xs text-emerald-400 hover:text-emerald-300 font-semibold flex items-center gap-1 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-plus text-[10px]"></i> Nuevo Ingreso
+                </button>
+            </div>
 
-      <!-- SECTION 1: OVERVIEW & DAILY PACE -->
-      <section id="sec-overview" class="space-y-6">
-        <!-- METRICS SUMMARY -->
-        <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <div class="glass-card rounded-xl p-4">
-            <p class="text-xs text-slate-400">Ingresos Totales</p>
-            <p class="mt-1 text-lg font-bold text-emerald-400" id="totalIncomesText">$0</p>
-          </div>
-          <div class="glass-card rounded-xl p-4">
-            <p class="text-xs text-slate-400">Costos & Deudas Fijas</p>
-            <p class="mt-1 text-lg font-bold text-rose-400" id="totalFixedText">$0</p>
-          </div>
-          <div class="glass-card rounded-xl p-4">
-            <p class="text-xs text-slate-400">Disponible Operativo</p>
-            <p class="mt-1 text-lg font-bold text-blue-400" id="netAvailableText">$0</p>
-          </div>
-          <div class="glass-card rounded-xl p-4">
-            <p class="text-xs text-slate-400">Ritmo Diario Sugerido</p>
-            <p class="mt-1 text-lg font-bold text-amber-400" id="dailyPaceText">$0 / día</p>
-          </div>
+            <div id="income-list" class="space-y-2">
+                <!-- Income list dynamic -->
+            </div>
         </div>
 
-        <!-- DAILY LOG FORM & LIST -->
-        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
-          <!-- Form -->
-          <div class="glass-card rounded-2xl p-5 md:col-span-1">
-            <h3 class="text-sm font-bold text-white mb-4">Registrar Gasto Diario</h3>
-            <form id="expenseForm" onsubmit="addExpense(event)" class="space-y-3">
-              <div>
-                <label class="block text-xs text-slate-400">Fecha</label>
-                <input type="date" id="expDate" required class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-              </div>
-              <div>
-                <label class="block text-xs text-slate-400">Concepto / Descripción</label>
-                <input type="text" id="expDesc" placeholder="Ej: Almuerzo, Uber, Mercado" required class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-              </div>
-              <div>
-                <label class="block text-xs text-slate-400">Monto (COP)</label>
-                <input type="number" id="expAmount" placeholder="0" required class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-              </div>
-              <button type="submit" class="w-full rounded-lg bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-500">Guardar Gasto</button>
+        <!-- MODULE 3: DEUDAS & COMPROMISOS FIJOS -->
+        <div id="module-deudas" class="tab-module space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-200">Semáforo de Pagos & Deudas</h3>
+                    <p class="text-[10px] text-slate-400">Control de vencimientos y cuotas</p>
+                </div>
+                <button onclick="openAddFixedModal()" class="text-xs text-rose-400 hover:text-rose-300 font-semibold flex items-center gap-1 bg-rose-500/10 border border-rose-500/20 px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-plus text-[10px]"></i> Agregar Deuda/Fijo
+                </button>
+            </div>
+
+            <!-- Resumen de Deuda Total -->
+            <div class="glass-card p-3 rounded-2xl flex justify-between items-center border-l-2 border-l-rose-500">
+                <div>
+                    <span class="text-[10px] text-slate-400">Pasivo Total Pendiente (Tarjetas/Créditos)</span>
+                    <h4 class="text-lg font-black text-rose-400 font-mono" id="total-debt-balance">$0</h4>
+                </div>
+                <div class="text-right">
+                    <span class="text-[10px] text-slate-400">Compromiso Mensual</span>
+                    <h4 class="text-sm font-bold text-slate-200 font-mono" id="total-fixed-monthly">$0</h4>
+                </div>
+            </div>
+
+            <div id="fixed-debts-list" class="space-y-2.5">
+                <!-- Fixed expenses & debts dynamic -->
+            </div>
+        </div>
+
+        <!-- MODULE 4: PLANES, VIAJES & METAS DE AHORRO -->
+        <div id="module-planes" class="tab-module space-y-4 hidden">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-xs font-bold text-slate-200">Proyectos, Viajes & Salidas</h3>
+                    <p class="text-[10px] text-slate-400">Calculadora de ahorro diario para metas</p>
+                </div>
+                <button onclick="openAddGoalModal()" class="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1 bg-indigo-500/10 border border-indigo-500/20 px-3 py-1.5 rounded-xl">
+                    <i class="fa-solid fa-plus text-[10px]"></i> Crear Proyecto
+                </button>
+            </div>
+
+            <div id="goals-list" class="space-y-3">
+                <!-- Goals dynamic -->
+            </div>
+        </div>
+
+        <!-- DATA PERSISTENCE & BACKUP FOOTER -->
+        <div class="glass-card p-3 rounded-2xl space-y-2 border-t border-slate-800">
+            <span class="text-[10px] text-slate-400 uppercase tracking-wider font-semibold block text-center">Gestión de Copia de Seguridad</span>
+            <div class="grid grid-cols-3 gap-2 text-xs">
+                <button onclick="exportJSON()" class="glass-input py-1.5 rounded-xl hover:bg-slate-800 transition text-center text-slate-300 font-medium">
+                    <i class="fa-solid fa-download text-indigo-400"></i> JSON
+                </button>
+                <button onclick="exportCSV()" class="glass-input py-1.5 rounded-xl hover:bg-slate-800 transition text-center text-slate-300 font-medium">
+                    <i class="fa-solid fa-file-csv text-emerald-400"></i> CSV
+                </button>
+                <button onclick="resetData()" class="glass-input py-1.5 rounded-xl hover:bg-rose-950/40 text-rose-400 border-rose-900/50 transition text-center font-medium">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- FLOATING ACTION BUTTON -->
+    <div class="fixed bottom-5 right-5 z-30">
+        <button onclick="openAddExpenseModal()" class="bg-gradient-to-r from-indigo-500 to-emerald-500 text-white w-12 h-12 rounded-full shadow-lg shadow-indigo-500/30 flex items-center justify-center text-xl hover:scale-105 active:scale-95 transition">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </div>
+
+    <!-- MODAL: AGREGAR GASTO VARIABLE -->
+    <div id="modal-expense" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+        <div class="glass-card bg-slate-900 border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Registrar Consumo Diario</h3>
+                <button onclick="closeModal('modal-expense')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <form onsubmit="handleSaveExpense(event)" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Monto ($ COP)</label>
+                    <input type="number" step="100" id="exp-amount" required placeholder="Ex: 25000" class="w-full glass-input px-3 py-2 rounded-xl text-lg font-bold">
+                </div>
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Concepto</label>
+                    <input type="text" id="exp-desc" required placeholder="Ej: Almuerzo, Uber, Cine" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Categoría</label>
+                        <select id="exp-category" class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                            <option value="Comida">🍔 Comida</option>
+                            <option value="Mercado">🛒 Mercado</option>
+                            <option value="Transporte">🚗 Transporte</option>
+                            <option value="Ocio">🎬 Ocio</option>
+                            <option value="Salud">💊 Salud</option>
+                            <option value="Otros">📦 Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Fecha</label>
+                        <input type="date" id="exp-date" required class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition">Guardar Consumo</button>
             </form>
-          </div>
-          <!-- Log List -->
-          <div class="glass-card rounded-2xl p-5 md:col-span-2">
-            <div class="flex items-center justify-between mb-4">
-              <h3 class="text-sm font-bold text-white">Historial del Mes</h3>
-              <span class="text-xs text-slate-400" id="expenseCount">0 registros</span>
+        </div>
+    </div>
+
+    <!-- MODAL: AGREGAR INGRESO -->
+    <div id="modal-income" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border-slate-800 w-full max-w-xs rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Nuevo Ingreso</h3>
+                <button onclick="closeModal('modal-income')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="max-h-72 overflow-y-auto space-y-2 pr-1" id="expenseList">
-              <p class="text-xs text-slate-500 text-center py-8">No hay gastos registrados este mes.</p>
+            <form onsubmit="handleSaveIncome(event)" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Monto ($ COP)</label>
+                    <input type="number" step="1000" id="inc-amount" required placeholder="Ex: 2500000" class="w-full glass-input px-3 py-2 rounded-xl text-base font-bold">
+                </div>
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Fuente / Concepto</label>
+                    <input type="text" id="inc-desc" required placeholder="Ej: Quincena, Freelance, Bonificación" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Tipo</label>
+                        <select id="inc-type" class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                            <option value="Fijo">Fijo / Recurrente</option>
+                            <option value="Extra">Extra / Variable</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Fecha</label>
+                        <input type="date" id="inc-date" required class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition">Agregar Ingreso</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL: AGREGAR OBLIGACIÓN FIJA O DEUDA -->
+    <div id="modal-fixed" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border-slate-800 w-full max-w-sm rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Nueva Obligación / Deuda</h3>
+                <button onclick="closeModal('modal-fixed')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-          </div>
+            <form onsubmit="handleSaveFixed(event)" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Nombre del Compromiso</label>
+                    <input type="text" id="fix-title" required placeholder="Ej: Arriendo, Tarjeta Bancolombia, Internet" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Cuota Mensual ($)</label>
+                        <input type="number" id="fix-quota" required placeholder="350000" class="w-full glass-input px-3 py-2 rounded-xl text-xs font-bold">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Día de Pago (1-31)</label>
+                        <input type="number" id="fix-day" min="1" max="31" required placeholder="15" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Tipo</label>
+                        <select id="fix-type" onchange="toggleDebtFields()" class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                            <option value="Gasto Fijo">Gasto Fijo Recurrente</option>
+                            <option value="Deuda">Tarjeta / Crédito</option>
+                        </select>
+                    </div>
+                    <div id="debt-field-balance" class="hidden">
+                        <label class="text-[11px] text-slate-400 block mb-1">Deuda Total Pendiente</label>
+                        <input type="number" id="fix-total-balance" placeholder="2500000" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition">Guardar Obligación</button>
+            </form>
         </div>
-      </section>
+    </div>
 
-      <!-- SECTION 2: INCOMES -->
-      <section id="sec-incomes" class="hidden space-y-6">
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-sm font-bold text-white mb-4">Agregar Fuente de Ingreso</h3>
-          <form id="incomeForm" onsubmit="addIncome(event)" class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-            <input type="text" id="incDesc" placeholder="Fuente (ej. Salario, Prima)" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <input type="number" id="incAmount" placeholder="Monto COP" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <button type="submit" class="rounded-lg bg-emerald-600 py-2 text-xs font-semibold text-white hover:bg-emerald-500">➕ Agregar Ingreso</button>
-          </form>
-        </div>
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-sm font-bold text-white mb-4">Ingresos Registrados</h3>
-          <div id="incomeList" class="space-y-2"></div>
-        </div>
-      </section>
-
-      <!-- SECTION 3: DEBTS & FIXED COSTS -->
-      <section id="sec-debts" class="hidden space-y-6">
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-sm font-bold text-white mb-4">Agregar Obligación / Deuda Fija</h3>
-          <form id="debtForm" onsubmit="addDebt(event)" class="grid grid-cols-1 gap-3 sm:grid-cols-4">
-            <input type="text" id="debtDesc" placeholder="Concepto (ej. Arriendo, Tarjeta)" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <input type="number" id="debtAmount" placeholder="Cuota Mensual COP" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <input type="number" id="debtDay" min="1" max="31" placeholder="Día de pago (1-31)" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <button type="submit" class="rounded-lg bg-rose-600 py-2 text-xs font-semibold text-white hover:bg-rose-500">➕ Agregar Obligación</button>
-          </form>
-        </div>
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-sm font-bold text-white mb-4">Semáforo de Vencimientos</h3>
-          <div id="debtList" class="space-y-2"></div>
-        </div>
-      </section>
-
-      <!-- SECTION 4: TRAVEL & SAVINGS -->
-      <section id="sec-travel" class="hidden space-y-6">
-        <div class="glass-card rounded-2xl p-5">
-          <h3 class="text-sm font-bold text-white mb-4">Crear Proyecto o Meta de Viaje</h3>
-          <form id="travelForm" onsubmit="addTravelProject(event)" class="grid grid-cols-1 gap-3 sm:grid-cols-4">
-            <input type="text" id="trvName" placeholder="Destino / Evento" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <input type="number" id="trvTarget" placeholder="Meta Total COP" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <input type="date" id="trvDate" required class="rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-xs text-white focus:outline-none" />
-            <button type="submit" class="rounded-lg bg-indigo-600 py-2 text-xs font-semibold text-white hover:bg-indigo-500">➕ Crear Proyecto</button>
-          </form>
-        </div>
-        <div id="travelList" class="grid grid-cols-1 gap-4 sm:grid-cols-2"></div>
-      </section>
-
-    </main>
-  </div>
-
-  <script>
-    // Global State
-    let state = {
-      pin: "1234",
-      incomes: [],
-      debts: [],
-      expenses: [],
-      travels: []
-    };
-
-    // Load Data on Startup
-    function init() {
-      const saved = localStorage.getItem("cmd_finance_data");
-      if (saved) state = JSON.parse(saved);
-      
-      const today = new Date();
-      document.getElementById("expDate").value = today.toISOString().split('T')[0];
-      document.getElementById("currentMonthYear").innerText = today.toLocaleDateString('es-CO', { month: 'long', year: 'numeric' }).toUpperCase();
-    }
-
-    function saveData() {
-      localStorage.setItem("cmd_finance_data", JSON.stringify(state));
-      renderAll();
-    }
-
-    // PIN Authentication
-    function unlockApp() {
-      const pin = document.getElementById("pinInput").value;
-      if (pin === state.pin) {
-        document.getElementById("pinScreen").classList.add("hidden");
-        document.getElementById("mainApp").classList.remove("hidden");
-        renderAll();
-      } else {
-        document.getElementById("pinError").classList.remove("hidden");
-      }
-    }
-
-    function lockApp() {
-      document.getElementById("mainApp").classList.add("hidden");
-      document.getElementById("pinScreen").classList.remove("hidden");
-      document.getElementById("pinInput").value = "";
-    }
-
-    // Navigation
-    function switchTab(tab) {
-      ['overview', 'incomes', 'debts', 'travel'].forEach(t => {
-        document.getElementById(`sec-${t}`).classList.add('hidden');
-        document.getElementById(`tab-${t}`).classList.remove('active');
-      });
-      document.getElementById(`sec-${tab}`).classList.remove('hidden');
-      document.getElementById(`tab-${tab}`).classList.add('active');
-    }
-
-    // Formatters
-    const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
-
-    // Business Logic & Render
-    function renderAll() {
-      // Incomes Total
-      const totalIncomes = state.incomes.reduce((a, b) => a + b.amount, 0);
-      document.getElementById("totalIncomesText").innerText = formatCOP(totalIncomes);
-
-      // Fixed Debts Total
-      const totalFixed = state.debts.reduce((a, b) => a + b.amount, 0);
-      document.getElementById("totalFixedText").innerText = formatCOP(totalFixed);
-
-      // Available & Pace
-      const netAvailable = totalIncomes - totalFixed;
-      document.getElementById("netAvailableText").innerText = formatCOP(netAvailable);
-
-      const today = new Date();
-      const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
-      const daysLeft = daysInMonth - today.getDate() + 1;
-      
-      const totalSpent = state.expenses.reduce((a, b) => a + b.amount, 0);
-      const remainingForVariable = netAvailable - totalSpent;
-      const dailyPace = daysLeft > 0 ? Math.max(0, remainingForVariable / daysLeft) : 0;
-      document.getElementById("dailyPaceText").innerText = `${formatCOP(dailyPace)} / día`;
-
-      // Render Expense Log
-      const expList = document.getElementById("expenseList");
-      document.getElementById("expenseCount").innerText = `${state.expenses.length} registros`;
-      if (state.expenses.length === 0) {
-        expList.innerHTML = `<p class="text-xs text-slate-500 text-center py-8">No hay gastos registrados este mes.</p>`;
-      } else {
-        expList.innerHTML = state.expenses.map((e, idx) => `
-          <div class="flex items-center justify-between rounded-lg bg-slate-900/60 p-3 border border-slate-800">
-            <div>
-              <p class="text-xs font-bold text-white">${e.desc}</p>
-              <p class="text-[10px] text-slate-400">${e.date}</p>
+    <!-- MODAL: AGREGAR PROYECTO O VIAJE -->
+    <div id="modal-goal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="glass-card bg-slate-900 border-slate-800 w-full max-w-xs rounded-2xl p-5 space-y-3">
+            <div class="flex justify-between items-center border-b border-slate-800 pb-2">
+                <h3 class="text-sm font-bold text-white">Nuevo Proyecto o Viaje</h3>
+                <button onclick="closeModal('modal-goal')" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-xs font-bold text-rose-400">-${formatCOP(e.amount)}</span>
-              <button onclick="removeExpense(${idx})" class="text-slate-500 hover:text-red-400 text-xs">✕</button>
-            </div>
-          </div>
-        `).join('');
-      }
-
-      // Render Incomes
-      document.getElementById("incomeList").innerHTML = state.incomes.map((i, idx) => `
-        <div class="flex items-center justify-between rounded-lg bg-slate-900/60 p-3 border border-slate-800">
-          <p class="text-xs font-bold text-white">${i.desc}</p>
-          <div class="flex items-center space-x-3">
-            <span class="text-xs font-bold text-emerald-400">+${formatCOP(i.amount)}</span>
-            <button onclick="removeIncome(${idx})" class="text-slate-500 hover:text-red-400 text-xs">✕</button>
-          </div>
+            <form onsubmit="handleSaveGoal(event)" class="space-y-3">
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Título del Proyecto</label>
+                    <input type="text" id="goal-title" required placeholder="Ej: Viaje a Cartagena, Fin de semana" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                </div>
+                <div>
+                    <label class="text-[11px] text-slate-400 block mb-1">Meta de Ahorro ($ COP)</label>
+                    <input type="number" id="goal-target" required placeholder="1800000" class="w-full glass-input px-3 py-2 rounded-xl text-xs font-bold">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Ahorrado ($)</label>
+                        <input type="number" id="goal-saved" placeholder="200000" class="w-full glass-input px-3 py-2 rounded-xl text-xs">
+                    </div>
+                    <div>
+                        <label class="text-[11px] text-slate-400 block mb-1">Fecha Objetivo</label>
+                        <input type="date" id="goal-date" required class="w-full glass-input px-2 py-2 rounded-xl text-xs">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs shadow-lg transition">Crear Proyecto</button>
+            </form>
         </div>
-      `).join('');
+    </div>
 
-      // Render Debts (Traffic light)
-      const currentDay = today.getDate();
-      document.getElementById("debtList").innerHTML = state.debts.map((d, idx) => {
-        let statusBadge = `<span class="rounded bg-slate-800 px-2 py-0.5 text-[10px] text-slate-400">⚪ Día ${d.day}</span>`;
-        if (d.paid) {
-          statusBadge = `<span class="rounded bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-400">🟢 Pagado</span>`;
-        } else if (currentDay > d.day) {
-          statusBadge = `<span class="rounded bg-rose-500/20 px-2 py-0.5 text-[10px] font-bold text-rose-400">🔴 Vencido</span>`;
-        } else if (d.day - currentDay <= 3) {
-          statusBadge = `<span class="rounded bg-amber-500/20 px-2 py-0.5 text-[10px] font-bold text-amber-400">🟡 Próximo</span>`;
+    <!-- JAVASCRIPT APP STATE & LOGIC -->
+    <script>
+        // APP STORAGE KEY VERSION
+        const STORAGE_KEY = 'FINANZAS_PRO_V8';
+        const DEFAULT_PIN = '1234';
+
+        // GLOBAL STATE
+        let appState = {
+            pin: DEFAULT_PIN,
+            incomes: [],
+            expenses: [],
+            fixedDebts: [],
+            goals: []
+        };
+
+        let currentPinInput = '';
+        let selectedYearMonth = '';
+        let doughnutChartInstance = null;
+
+        // CATEGORY ICONS MAP
+        const categoryIcons = {
+            'Comida': 'fa-utensils text-amber-400 bg-amber-400/10',
+            'Mercado': 'fa-cart-shopping text-emerald-400 bg-emerald-400/10',
+            'Transporte': 'fa-car text-blue-400 bg-blue-400/10',
+            'Ocio': 'fa-film text-rose-400 bg-rose-400/10',
+            'Salud': 'fa-heart-pulse text-indigo-400 bg-indigo-400/10',
+            'Otros': 'fa-box text-slate-400 bg-slate-400/10'
+        };
+
+        // ON LOAD INITIALIZATION
+        window.onload = function() {
+            const today = new Date();
+            const yyyy = today.getFullYear();
+            const mm = String(today.getMonth() + 1).padStart(2, '0');
+            selectedYearMonth = `${yyyy}-${mm}`;
+            document.getElementById('month-picker').value = selectedYearMonth;
+
+            loadData();
+            document.getElementById('exp-date').value = today.toISOString().split('T')[0];
+            document.getElementById('inc-date').value = today.toISOString().split('T')[0];
+            
+            updateDashboard();
+        };
+
+        // SECURITY PIN HANDLERS
+        function appendPin(num) {
+            if (currentPinInput.length < 4) {
+                currentPinInput += num;
+                updatePinDots();
+                if (currentPinInput.length === 4) {
+                    setTimeout(verifyPin, 150);
+                }
+            }
         }
 
-        return `
-          <div class="flex items-center justify-between rounded-lg bg-slate-900/60 p-3 border border-slate-800">
-            <div>
-              <p class="text-xs font-bold text-white">${d.desc}</p>
-              <div class="mt-1">${statusBadge}</div>
-            </div>
-            <div class="flex items-center space-x-3">
-              <span class="text-xs font-bold text-white">${formatCOP(d.amount)}</span>
-              <button onclick="toggleDebtPaid(${idx})" class="text-xs text-blue-400 hover:underline">${d.paid ? 'Desmarcar' : 'Pagar'}</button>
-              <button onclick="removeDebt(${idx})" class="text-slate-500 hover:text-red-400 text-xs">✕</button>
-            </div>
-          </div>
-        `;
-      }).join('');
+        function deletePin() {
+            currentPinInput = currentPinInput.slice(0, -1);
+            updatePinDots();
+        }
 
-      // Render Travel
-      document.getElementById("travelList").innerHTML = state.travels.map((t, idx) => {
-        const pct = Math.min(100, Math.round((t.saved / t.target) * 100));
-        return `
-          <div class="glass-card rounded-xl p-4 space-y-3">
-            <div class="flex items-center justify-between">
-              <h4 class="text-xs font-bold text-white">${t.name}</h4>
-              <button onclick="removeTravel(${idx})" class="text-slate-500 hover:text-red-400 text-xs">✕</button>
-            </div>
-            <div class="flex justify-between text-[11px] text-slate-400">
-              <span>Meta: ${formatCOP(t.target)}</span>
-              <span>Ahorrado: ${formatCOP(t.saved)}</span>
-            </div>
-            <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
-              <div class="bg-indigo-500 h-full" style="width: ${pct}%"></div>
-            </div>
-            <div class="flex items-center justify-between pt-1">
-              <span class="text-[10px] text-indigo-400 font-bold">${pct}% Cumplido</span>
-              <button onclick="depositTravel(${idx})" class="rounded bg-indigo-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-indigo-500">➕ Abonar</button>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
+        function clearPin() {
+            currentPinInput = '';
+            updatePinDots();
+        }
 
-    // Actions
-    function addExpense(e) {
-      e.preventDefault();
-      state.expenses.unshift({
-        date: document.getElementById("expDate").value,
-        desc: document.getElementById("expDesc").value,
-        amount: parseFloat(document.getElementById("expAmount").value) || 0
-      });
-      document.getElementById("expDesc").value = "";
-      document.getElementById("expAmount").value = "";
-      saveData();
-    }
+        function updatePinDots() {
+            const dots = document.getElementById('pin-dots').children;
+            for (let i = 0; i < 4; i++) {
+                dots[i].className = i < currentPinInput.length 
+                    ? 'w-3.5 h-3.5 rounded-full bg-indigo-500 border border-indigo-400 shadow-sm shadow-indigo-500/50' 
+                    : 'w-3.5 h-3.5 rounded-full border border-slate-600';
+            }
+        }
 
-    function removeExpense(i) { state.expenses.splice(i, 1); saveData(); }
+        function verifyPin() {
+            if (currentPinInput === appState.pin) {
+                document.getElementById('pin-overlay').classList.add('hidden');
+                currentPinInput = '';
+                updatePinDots();
+            } else {
+                document.getElementById('pin-error').classList.remove('hidden');
+                clearPin();
+            }
+        }
 
-    function addIncome(e) {
-      e.preventDefault();
-      state.incomes.push({
-        desc: document.getElementById("incDesc").value,
-        amount: parseFloat(document.getElementById("incAmount").value) || 0
-      });
-      document.getElementById("incDesc").value = "";
-      document.getElementById("incAmount").value = "";
-      saveData();
-    }
+        function lockApp() {
+            document.getElementById('pin-overlay').classList.remove('hidden');
+        }
 
-    function removeIncome(i) { state.incomes.splice(i, 1); saveData(); }
+        // DATA STORAGE
+        function loadData() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) {
+                appState = JSON.parse(stored);
+            } else {
+                // Seed initial realistic data
+                const todayStr = new Date().toISOString().split('T')[0];
+                appState.incomes = [
+                    { id: 1, amount: 3500000, desc: 'Sueldo Principal', type: 'Fijo', date: todayStr }
+                ];
+                appState.fixedDebts = [
+                    { id: 101, title: 'Arriendo', quota: 1200000, day: 5, type: 'Gasto Fijo', balance: 0, paidMonths: [] },
+                    { id: 102, title: 'Tarjeta Bancolombia', quota: 350000, day: 15, type: 'Deuda', balance: 1800000, paidMonths: [] }
+                ];
+                appState.expenses = [
+                    { id: 201, amount: 45000, desc: 'Almuerzo Ejecutivo', category: 'Comida', date: todayStr }
+                ];
+                appState.goals = [
+                    { id: 301, title: 'Viaje a Cartagena', target: 2000000, saved: 600000, targetDate: '2026-12-15' }
+                ];
+                saveData();
+            }
+        }
 
-    function addDebt(e) {
-      e.preventDefault();
-      state.debts.push({
-        desc: document.getElementById("debtDesc").value,
-        amount: parseFloat(document.getElementById("debtAmount").value) || 0,
-        day: parseInt(document.getElementById("debtDay").value) || 1,
-        paid: false
-      });
-      document.getElementById("debtDesc").value = "";
-      document.getElementById("debtAmount").value = "";
-      document.getElementById("debtDay").value = "";
-      saveData();
-    }
+        function saveData() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        }
 
-    function toggleDebtPaid(i) { state.debts[i].paid = !state.debts[i].paid; saveData(); }
-    function removeDebt(i) { state.debts.splice(i, 1); saveData(); }
+        // TAB NAVIGATION
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-module').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
 
-    function addTravelProject(e) {
-      e.preventDefault();
-      state.travels.push({
-        name: document.getElementById("trvName").value,
-        target: parseFloat(document.getElementById("trvTarget").value) || 0,
-        date: document.getElementById("trvDate").value,
-        saved: 0
-      });
-      document.getElementById("trvName").value = "";
-      document.getElementById("trvTarget").value = "";
-      document.getElementById("trvDate").value = "";
-      saveData();
-    }
+            document.getElementById(`module-${tabName}`).classList.remove('hidden');
+            document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+        }
 
-    function depositTravel(i) {
-      const amt = prompt("Monto a abonar (COP):");
-      if (amt && !isNaN(amt)) {
-        state.travels[i].saved += parseFloat(amt);
-        saveData();
-      }
-    }
+        function changeMonth() {
+            const pickerVal = document.getElementById('month-picker').value;
+            if (pickerVal) {
+                selectedYearMonth = pickerVal;
+                updateDashboard();
+            }
+        }
 
-    function removeTravel(i) { state.travels.splice(i, 1); saveData(); }
+        // FORMAT CURRENCY COP
+        function formatCOP(val) {
+            return '$' + Math.round(val).toLocaleString('es-CO');
+        }
 
-    // Init call
-    init();
-  </script>
+        // CALCULATE DASHBOARD KPIs
+        function updateDashboard() {
+            // Month text label
+            const [year, month] = selectedYearMonth.split('-');
+            const monthNames = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+            document.getElementById('current-month-display').innerText = `${monthNames[parseInt(month) - 1]} ${year}`;
+
+            // Filter data for selected month
+            const currentIncomes = appState.incomes.filter(i => i.date.startsWith(selectedYearMonth));
+            const currentExpenses = appState.expenses.filter(e => e.date.startsWith(selectedYearMonth));
+
+            const totalIncome = currentIncomes.reduce((sum, i) => sum + i.amount, 0);
+            const totalFixed = appState.fixedDebts.reduce((sum, f) => sum + f.quota, 0);
+            const totalVariable = currentExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+            const netAvailable = totalIncome - totalFixed - totalVariable;
+
+            // Days remaining calculation
+            const today = new Date();
+            const todayStr = today.toISOString().split('T')[0];
+            const daysInMonth = new Date(year, month, 0).getDate();
+            const isCurrentMonth = todayStr.startsWith(selectedYearMonth);
+            const currentDayNumber = isCurrentMonth ? today.getDate() : daysInMonth;
+            const daysLeft = Math.max(1, daysInMonth - currentDayNumber + 1);
+
+            // Safe daily budget pace
+            const safeDailyLimit = (totalIncome - totalFixed) > 0 ? ((totalIncome - totalFixed - totalVariable) / daysLeft) : 0;
+            const todaySpent = currentExpenses.filter(e => e.date === todayStr).reduce((sum, e) => sum + e.amount, 0);
+
+            // Update DOM KPIs
+            document.getElementById('kpi-net-available').innerText = formatCOP(netAvailable);
+            document.getElementById('kpi-safe-daily-limit').innerText = `${formatCOP(Math.max(0, safeDailyLimit))}`;
+            document.getElementById('kpi-spent-today').innerText = formatCOP(todaySpent);
+
+            // KPI Badge status
+            const badge = document.getElementById('kpi-status-badge');
+            if (netAvailable < 0) {
+                badge.innerText = 'Déficit';
+                badge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            } else if (todaySpent > safeDailyLimit && safeDailyLimit > 0) {
+                badge.innerText = 'Excedido Hoy';
+                badge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30';
+            } else {
+                badge.innerText = 'Sostenible';
+                badge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            }
+
+            // Overview tab stats
+            document.getElementById('resumen-total-income').innerText = formatCOP(totalIncome);
+            document.getElementById('resumen-total-fixed').innerText = formatCOP(totalFixed);
+            document.getElementById('resumen-variable-spent').innerText = formatCOP(totalVariable);
+            
+            const dailyAvg = currentDayNumber > 0 ? (totalVariable / currentDayNumber) : 0;
+            document.getElementById('resumen-daily-avg').innerText = formatCOP(dailyAvg);
+
+            // Render sub-components
+            renderDoughnutChart(currentExpenses);
+            renderExpensesList();
+            renderIncomesList();
+            renderFixedDebtsList();
+            renderGoalsList();
+        }
+
+        // CHART.JS DOUGHNUT
+        function renderDoughnutChart(monthExpenses) {
+            const ctx = document.getElementById('categoryDoughnutChart').getContext('2d');
+            const total = monthExpenses.reduce((sum, e) => sum + e.amount, 0);
+            document.getElementById('chart-total-expenses').innerText = `${formatCOP(total)} Total`;
+
+            const catTotals = {};
+            monthExpenses.forEach(e => {
+                catTotals[e.category] = (catTotals[e.category] || 0) + e.amount;
+            });
+
+            const labels = Object.keys(catTotals);
+            const data = Object.values(catTotals);
+
+            if (doughnutChartInstance) doughnutChartInstance.destroy();
+
+            doughnutChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels.length ? labels : ['Sin consumos'],
+                    datasets: [{
+                        data: data.length ? data : [1],
+                        backgroundColor: ['#f59e0b', '#10b981', '#3b82f6', '#f43f5e', '#6366f1', '#64748b'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'right', labels: { color: '#94a3b8', font: { size: 10 } } }
+                    },
+                    cutout: '70%'
+                }
+            });
+        }
+
+        // RENDER EXPENSES LIST
+        function renderExpensesList() {
+            const container = document.getElementById('expenses-timeline');
+            const search = document.getElementById('search-expense').value.toLowerCase();
+            const catFilter = document.getElementById('filter-category').value;
+            const dateFilter = document.getElementById('filter-date').value;
+
+            let filtered = appState.expenses.filter(e => {
+                const matchMonth = e.date.startsWith(selectedYearMonth);
+                const matchSearch = e.desc.toLowerCase().includes(search);
+                const matchCat = catFilter === 'ALL' || e.category === catFilter;
+                const matchDate = !dateFilter || e.date === dateFilter;
+                return matchMonth && matchSearch && matchCat && matchDate;
+            });
+
+            filtered.sort((a,b) => new Date(b.date) - new Date(a.date));
+
+            if (!filtered.length) {
+                container.innerHTML = `<div class="glass-card p-4 text-center text-xs text-slate-500 rounded-xl">Sin consumos registrados</div>`;
+                return;
+            }
+
+            container.innerHTML = filtered.map(e => {
+                const iconClass = categoryIcons[e.category] || categoryIcons['Otros'];
+                return `
+                    <div class="glass-card p-2.5 rounded-xl flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg flex items-center justify-center ${iconClass.split(' ').slice(1).join(' ')}">
+                                <i class="fa-solid ${iconClass.split(' ')[0]}"></i>
+                            </div>
+                            <div>
+                                <p class="font-bold text-slate-200">${escapeHtml(e.desc)}</p>
+                                <p class="text-[10px] text-slate-400">${e.category} • ${e.date}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono font-bold text-slate-100">-${formatCOP(e.amount)}</span>
+                            <button onclick="deleteExpense(${e.id})" class="text-slate-600 hover:text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // RENDER INCOMES
+        function renderIncomesList() {
+            const container = document.getElementById('income-list');
+            const currentIncomes = appState.incomes.filter(i => i.date.startsWith(selectedYearMonth));
+
+            if (!currentIncomes.length) {
+                container.innerHTML = `<div class="glass-card p-4 text-center text-xs text-slate-500 rounded-xl">No hay ingresos en este mes</div>`;
+                return;
+            }
+
+            container.innerHTML = currentIncomes.map(i => `
+                <div class="glass-card p-3 rounded-xl flex items-center justify-between text-xs border-l-2 border-l-emerald-500">
+                    <div>
+                        <p class="font-bold text-slate-200">${escapeHtml(i.desc)}</p>
+                        <p class="text-[10px] text-slate-400">${i.type} • ${i.date}</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-mono font-bold text-emerald-400">+${formatCOP(i.amount)}</span>
+                        <button onclick="deleteIncome(${i.id})" class="text-slate-600 hover:text-rose-400 p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // RENDER FIXED DEBTS & TRAFFIC LIGHT SYSTEM
+        function renderFixedDebtsList() {
+            const container = document.getElementById('fixed-debts-list');
+            let totalDebtBalance = 0;
+            let totalFixedMonthly = 0;
+
+            const [year, month] = selectedYearMonth.split('-');
+            const daysInMonth = new Date(year, month, 0).getDate();
+
+            container.innerHTML = appState.fixedDebts.map(f => {
+                totalFixedMonthly += f.quota;
+                if (f.type === 'Deuda') totalDebtBalance += (f.balance || 0);
+
+                const isPaid = f.paidMonths && f.paidMonths.includes(selectedYearMonth);
+                const today = new Date();
+                const currentDay = today.getDate();
+                const payDay = Math.min(f.day, daysInMonth);
+
+                let statusBadge = '';
+                if (isPaid) {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">🟢 Pagado</span>`;
+                } else if (currentDay > payDay) {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-rose-500/20 text-rose-400 border border-rose-500/30">🔴 Vencido</span>`;
+                } else if (payDay - currentDay <= 5) {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30">🟡 Próximo (Día ${payDay})</span>`;
+                } else {
+                    statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] bg-slate-800 text-slate-300">⚪ En Plazo (Día ${payDay})</span>`;
+                }
+
+                return `
+                    <div class="glass-card p-3 rounded-xl space-y-2 text-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <h4 class="font-bold text-slate-100">${escapeHtml(f.title)}</h4>
+                                    <span class="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">${f.type}</span>
+                                </div>
+                                <p class="text-[10px] text-slate-400 mt-0.5">Cuota: <strong class="text-slate-200 font-mono">${formatCOP(f.quota)}</strong> ${f.type === 'Deuda' ? `| Saldo: ${formatCOP(f.balance)}` : ''}</p>
+                            </div>
+                            ${statusBadge}
+                        </div>
+                        <div class="flex justify-between items-center pt-1 border-t border-slate-800/80">
+                            <button onclick="togglePayFixed(${f.id})" class="text-[11px] font-semibold text-indigo-400 hover:underline">
+                                ${isPaid ? 'Desmarcar Pago' : '✔ Marcar como Pagado'}
+                            </button>
+                            <button onclick="deleteFixed(${f.id})" class="text-slate-600 hover:text-rose-400"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.getElementById('total-debt-balance').innerText = formatCOP(totalDebtBalance);
+            document.getElementById('total-fixed-monthly').innerText = formatCOP(totalFixedMonthly);
+        }
+
+        // RENDER GOALS & TRIPS
+        function renderGoalsList() {
+            const container = document.getElementById('goals-list');
+            if (!appState.goals.length) {
+                container.innerHTML = `<div class="glass-card p-4 text-center text-xs text-slate-500 rounded-xl">Sin metas o viajes activos</div>`;
+                return;
+            }
+
+            const today = new Date();
+
+            container.innerHTML = appState.goals.map(g => {
+                const percent = Math.min(100, Math.round((g.saved / g.target) * 100));
+                const targetD = new Date(g.targetDate);
+                const diffDays = Math.max(1, Math.ceil((targetD - today) / (1000 * 60 * 60 * 24)));
+                const remaining = Math.max(0, g.target - g.saved);
+                const dailyRequired = remaining / diffDays;
+
+                return `
+                    <div class="glass-card p-3.5 rounded-2xl space-y-2 text-xs">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-bold text-slate-100 flex items-center gap-1.5">
+                                    <i class="fa-solid fa-plane-departure text-indigo-400"></i> ${escapeHtml(g.title)}
+                                </h4>
+                                <p class="text-[10px] text-slate-400">Meta: <strong class="text-slate-200 font-mono">${formatCOP(g.target)}</strong> | Fecha: ${g.targetDate}</p>
+                            </div>
+                            <button onclick="depositGoal(${g.id})" class="bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-semibold px-2.5 py-1 rounded-xl text-[11px] hover:bg-indigo-600/50">
+                                ➕ Abonar
+                            </button>
+                        </div>
+                        <div class="w-full h-2 bg-slate-900 rounded-full overflow-hidden border border-slate-800">
+                            <div class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                        <div class="flex justify-between items-center text-[10px] text-slate-400 font-mono">
+                            <span>Ahorrado: ${formatCOP(g.saved)} (${percent}%)</span>
+                            <span class="text-emerald-400 font-semibold">Caja/Día: ${formatCOP(dailyRequired)}/día</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // SAVE & DELETE HANDLERS
+        function handleSaveExpense(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('exp-amount').value);
+            const desc = document.getElementById('exp-desc').value;
+            const category = document.getElementById('exp-category').value;
+            const date = document.getElementById('exp-date').value;
+
+            appState.expenses.push({ id: Date.now(), amount, desc, category, date });
+            saveData();
+            closeModal('modal-expense');
+            updateDashboard();
+        }
+
+        function deleteExpense(id) {
+            appState.expenses = appState.expenses.filter(e => e.id !== id);
+            saveData();
+            updateDashboard();
+        }
+
+        function handleSaveIncome(e) {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('inc-amount').value);
+            const desc = document.getElementById('inc-desc').value;
+            const type = document.getElementById('inc-type').value;
+            const date = document.getElementById('inc-date').value;
+
+            appState.incomes.push({ id: Date.now(), amount, desc, type, date });
+            saveData();
+            closeModal('modal-income');
+            updateDashboard();
+        }
+
+        function deleteIncome(id) {
+            appState.incomes = appState.incomes.filter(i => i.id !== id);
+            saveData();
+            updateDashboard();
+        }
+
+        function handleSaveFixed(e) {
+            e.preventDefault();
+            const title = document.getElementById('fix-title').value;
+            const quota = parseFloat(document.getElementById('fix-quota').value);
+            const day = parseInt(document.getElementById('fix-day').value);
+            const type = document.getElementById('fix-type').value;
+            const balance = parseFloat(document.getElementById('fix-total-balance').value) || 0;
+
+            appState.fixedDebts.push({ id: Date.now(), title, quota, day, type, balance, paidMonths: [] });
+            saveData();
+            closeModal('modal-fixed');
+            updateDashboard();
+        }
+
+        function togglePayFixed(id) {
+            const item = appState.fixedDebts.find(f => f.id === id);
+            if (item) {
+                if (!item.paidMonths) item.paidMonths = [];
+                const idx = item.paidMonths.indexOf(selectedYearMonth);
+                if (idx >= 0) item.paidMonths.splice(idx, 1);
+                else item.paidMonths.push(selectedYearMonth);
+                saveData();
+                updateDashboard();
+            }
+        }
+
+        function deleteFixed(id) {
+            appState.fixedDebts = appState.fixedDebts.filter(f => f.id !== id);
+            saveData();
+            updateDashboard();
+        }
+
+        function handleSaveGoal(e) {
+            e.preventDefault();
+            const title = document.getElementById('goal-title').value;
+            const target = parseFloat(document.getElementById('goal-target').value);
+            const saved = parseFloat(document.getElementById('goal-saved').value) || 0;
+            const targetDate = document.getElementById('goal-date').value;
+
+            appState.goals.push({ id: Date.now(), title, target, saved, targetDate });
+            saveData();
+            closeModal('modal-goal');
+            updateDashboard();
+        }
+
+        function depositGoal(id) {
+            const val = prompt('Ingrese el monto a abonar ($ COP):');
+            const num = parseFloat(val);
+            if (!isNaN(num) && num > 0) {
+                const goal = appState.goals.find(g => g.id === id);
+                if (goal) {
+                    goal.saved += num;
+                    saveData();
+                    updateDashboard();
+                }
+            }
+        }
+
+        // MODALS & EXPORTS
+        function openAddExpenseModal() { document.getElementById('modal-expense').classList.remove('hidden'); }
+        function openAddIncomeModal() { document.getElementById('modal-income').classList.remove('hidden'); }
+        function openAddFixedModal() { document.getElementById('modal-fixed').classList.remove('hidden'); }
+        function openAddGoalModal() { document.getElementById('modal-goal').classList.remove('hidden'); }
+
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function toggleDebtFields() {
+            const type = document.getElementById('fix-type').value;
+            document.getElementById('debt-field-balance').classList.toggle('hidden', type !== 'Deuda');
+        }
+
+        function exportJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appState, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `finanzas_pro_backup_${selectedYearMonth}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function exportCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,Fecha,Concepto,Categoria,Monto\n";
+            appState.expenses.forEach(e => {
+                csvContent += `${e.date},"${e.desc}",${e.category},${e.amount}\n`;
+            });
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `gastos_${selectedYearMonth}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        }
+
+        function resetData() {
+            if (confirm("¿Estás seguro de reiniciar los datos? Esta acción borra el registro local.")) {
+                localStorage.removeItem(STORAGE_KEY);
+                location.reload();
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
+        }
+    </script>
 </body>
 </html>
