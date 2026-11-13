@@ -41,9 +41,9 @@
 </head>
 <body class="p-4 md:p-8">
 
-  <!-- PANTALLA DE BLOQUEO / PIN -->
-  <div id="pinScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0e12] px-4">
-    <div class="glass-card w-full max-w-sm rounded-3xl p-8 text-center space-y-6">
+  <!-- PANTALLA DE BLOQUEO / PIN (Z-Index máximo y cobertura total absoluta) -->
+  <div id="pinScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0e12] w-screen h-screen">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-8 text-center space-y-6 mx-4">
       <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-400 border border-orange-500/20 text-2xl font-bold">
         🔒
       </div>
@@ -57,11 +57,11 @@
     </div>
   </div>
 
-  <!-- CONTAINER PRINCIPAL -->
-  <div id="mainApp" class="hidden max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
+  <!-- CONTAINER PRINCIPAL (Oculto al inicio) -->
+  <div id="mainApp" class="hidden max-w-7xl mx-auto flex flex-col md:flex-row gap-6">
 
     <!-- MENÚ LATERAL -->
-    <aside class="w-full md:w-64 glass-card rounded-3xl p-5 flex flex-col justify-between">
+    <aside class="w-full md:w-64 glass-card rounded-3xl p-5 flex flex-col justify-between md:min-h-[85vh]">
       <div>
         <div class="flex items-center justify-between mb-6">
           <div class="flex items-center space-x-3">
@@ -101,7 +101,7 @@
             <p class="text-3xl font-black text-emerald-400 mt-2" id="cashBalanceText">$0</p>
           </div>
         </div>
-        <div class="glass-card rounded-3xl p-6 grid grid-cols-2 gap-4">
+        <div class="glass-card rounded-3xl p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <p class="text-xs text-slate-400 font-bold uppercase">Ingresos Reales</p>
             <p class="text-xl font-black text-emerald-400 mt-1" id="homeInc">$0</p>
@@ -347,7 +347,7 @@
     function addExpense(e) {
       e.preventDefault();
       state.expenses.unshift({ desc: document.getElementById("expDesc").value, amount: parseFloat(document.getElementById("expAmount").value) || 0, pocket: document.getElementById("expPocket").value, date: document.getElementById("expDate").value });
-      document.getElementById("expDesc0").value = ""; document.getElementById("expAmount").value = "";
+      document.getElementById("expDesc").value = ""; document.getElementById("expAmount").value = "";
       renderAll();
     }
     function removeExpense(i) { state.expenses.splice(i, 1); renderAll(); }
