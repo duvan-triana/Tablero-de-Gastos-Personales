@@ -3,239 +3,380 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Centro de Comando Financiero Pro</title>
+  <title>Glassy Financial Dashboard Pro</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          colors: {
-            appbg: '#0a0c10',
-            cardbg: '#141720',
-            cardborder: '#222736',
-            neonGreen: '#10b981',
-            neonPurple: '#a855f7',
-            neonBlue: '#3b82f6',
-            neonOrange: '#f97316',
-            neonPink: '#ec4899'
-          }
-        }
-      }
-    }
-  </script>
   <style>
     body {
-      background: radial-gradient(circle at top center, #161926 0%, #0a0c10 100%);
+      background: #0c0e12;
       color: #f3f4f6;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
     }
-
-    .dark-card {
-      background: linear-gradient(145deg, #151822 0%, #0f1118 100%);
-      border: 1px solid rgba(255, 255, 255, 0.06);
+    .glass-card {
+      background: #141720;
+      border: 1px solid rgba(255, 255, 255, 0.08);
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    .dark-card:hover {
-      border-color: rgba(168, 85, 247, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 14px 35px rgba(168, 85, 247, 0.15);
+    .glass-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      cursor: pointer;
+      transition: all 0.2s ease;
     }
-
-    .glow-plus {
-      background: linear-gradient(135deg, #a855f7 0%, #3b82f6 100%);
-      box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
-      transition: all 0.3s ease;
+    .glass-pill:hover { background: rgba(255, 255, 255, 0.1); }
+    .glass-pill.active {
+      background: linear-gradient(135deg, #f97316 0%, #a855f7 100%);
+      border-color: rgba(255, 255, 255, 0.3);
     }
-    .glow-plus:hover {
-      transform: translateY(-3px) scale(1.08);
-      box-shadow: 0 0 35px rgba(168, 85, 247, 0.9);
+    .glow-btn {
+      background: linear-gradient(135deg, #f97316 0%, #a855f7 100%);
+      transition: all 0.2s ease;
     }
-
-    .tab-content {
-      animation: fadeInSlide 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes fadeInSlide {
-      from { opacity: 0; transform: translateY(14px) scale(0.98); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-
-    .tab-pill {
-      transition: all 0.25s ease;
-    }
-    .tab-pill.active {
-      background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
-      color: #ffffff;
-      box-shadow: 0 0 18px rgba(147, 51, 234, 0.5);
-      transform: scale(1.02);
-    }
-
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .glow-btn:hover { opacity: 0.9; }
+    .tab-content { display: none; }
+    .tab-content.active-tab { display: block; }
   </style>
 </head>
-<body class="min-h-screen pb-28 antialiased selection:bg-purple-500 selection:text-white">
+<body class="p-4 md:p-8">
 
-  <!-- PANTALLA PIN -->
-  <div id="pinScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0a0c10]/95 backdrop-blur-md px-4">
-    <div class="dark-card w-full max-w-sm rounded-3xl p-8 text-center">
-      <div class="mx-auto mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20 shadow-lg shadow-purple-500/10">
-        <svg class="h-8 w-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+  <!-- PANTALLA DE BLOQUEO / PIN -->
+  <div id="pinScreen" class="fixed inset-0 z-50 flex items-center justify-center bg-[#0c0e12] px-4">
+    <div class="glass-card w-full max-w-sm rounded-3xl p-8 text-center space-y-6">
+      <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-500/10 text-orange-400 border border-orange-500/20 text-2xl font-bold">
+        🔒
       </div>
-      <h2 class="text-2xl font-bold text-white tracking-wide">Comando Financiero</h2>
-      <p class="mt-1 text-xs text-slate-400">PIN de acceso (Predeterminado: 1234)</p>
-      <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="mt-6 w-full rounded-2xl border border-slate-700 bg-[#0a0c10] py-4 text-center text-3xl font-black tracking-widest text-purple-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 focus:outline-none transition-all" />
-      <button onclick="unlockApp()" class="mt-6 w-full rounded-2xl glow-plus py-4 text-sm font-bold text-white">Ingresar</button>
-      <p id="pinError" class="mt-3 hidden text-xs font-semibold text-rose-400">PIN Incorrecto</p>
+      <div>
+        <h2 class="text-xl font-bold text-white tracking-wide">Centro Financiero</h2>
+        <p class="mt-1 text-xs text-slate-400">Digita tu PIN de acceso (1234)</p>
+      </div>
+      <input type="password" id="pinInput" maxlength="4" placeholder="••••" class="w-full rounded-2xl border border-slate-700 bg-black/40 py-4 text-center text-3xl font-black tracking-widest text-orange-400 focus:border-orange-500 focus:outline-none" />
+      <button onclick="unlockApp()" class="w-full rounded-2xl glow-btn py-4 text-sm font-bold text-white">Ingresar al Sistema</button>
+      <p id="pinError" class="hidden text-xs font-semibold text-rose-400">PIN Incorrecto (Usa 1234)</p>
     </div>
   </div>
 
-  <!-- CONTAINER PRINCIPAL MOBILE-FIRST -->
-  <div id="mainApp" style="display: none;" class="mx-auto max-w-md min-h-screen flex flex-col justify-between px-4 pt-6">
+  <!-- CONTAINER PRINCIPAL -->
+  <div id="mainApp" class="hidden max-w-6xl mx-auto flex flex-col md:flex-row gap-6">
 
-    <!-- HEADER DE USUARIO CON FECHA INTEGRADA -->
-    <header class="flex items-center justify-between mb-5">
+    <!-- MENÚ LATERAL -->
+    <aside class="w-full md:w-64 glass-card rounded-3xl p-5 flex flex-col justify-between">
       <div>
-        <p id="headerDate" class="text-[11px] font-semibold text-purple-400 capitalize tracking-wide mb-0.5"></p>
-        <p class="text-xs font-medium text-slate-400">Panel Ejecutivo</p>
-        <h1 class="text-2xl font-black text-white tracking-tight">Hola, Duvan 👋</h1>
-      </div>
-      <div class="flex items-center space-x-3">
-        <button onclick="lockApp()" class="flex h-10 w-10 items-center justify-center rounded-2xl dark-card text-slate-400 hover:text-white transition" title="Bloquear">
-          <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-        </button>
-        <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-purple-600 to-blue-500 p-0.5 flex items-center justify-center shadow-lg shadow-purple-500/20">
-          <span class="font-bold text-white text-xs">DT</span>
+        <div class="flex items-center justify-between mb-6">
+          <div class="flex items-center space-x-3">
+            <div class="h-10 w-10 rounded-2xl bg-gradient-to-tr from-orange-500 to-purple-600 flex items-center justify-center font-bold text-white">DV</div>
+            <div>
+              <h1 class="text-sm font-bold text-white">Duvan A.</h1>
+              <p class="text-[10px] text-orange-400">Comando Pro V2</p>
+            </div>
+          </div>
+          <button onclick="lockApp()" class="text-slate-400 hover:text-white text-xs p-2 rounded-xl glass-pill" title="Bloquear">🔒</button>
         </div>
+        <nav class="flex md:flex-col gap-2 overflow-x-auto pb-2 md:pb-0">
+          <button onclick="switchTab('home')" id="btn-home" class="glass-pill active px-4 py-3 rounded-2xl text-xs font-bold text-left whitespace-nowrap">🏠 Overview / Home</button>
+          <button onclick="switchTab('incomes')" id="btn-incomes" class="glass-pill px-4 py-3 rounded-2xl text-xs font-bold text-left whitespace-nowrap">💵 Ingresos</button>
+          <button onclick="switchTab('expenses')" id="btn-expenses" class="glass-pill px-4 py-3 rounded-2xl text-xs font-bold text-left whitespace-nowrap">🛒 Gastos</button>
+          <button onclick="switchTab('debts')" id="btn-debts" class="glass-pill px-4 py-3 rounded-2xl text-xs font-bold text-left whitespace-nowrap">🚦 Mis Deudas</button>
+          <button onclick="switchTab('loans')" id="btn-loans" class="glass-pill px-4 py-3 rounded-2xl text-xs font-bold text-left whitespace-nowrap">🤝 Por Cobrar</button>
+        </nav>
       </div>
-    </header>
+      <div class="hidden md:block pt-4 border-t border-white/5 text-[10px] text-slate-500 text-center">
+        Seguridad Activa (PIN: 1234)
+      </div>
+    </aside>
 
-    <!-- MENÚ PÍLDORAS / SUB-NAVEGACIÓN -->
-    <div class="flex space-x-2 overflow-x-auto no-scrollbar mb-5 pb-1">
-      <button onclick="switchTab('home')" id="btn-home" class="tab-pill active rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">🏠 Home</button>
-      <button onclick="switchTab('incomes')" id="btn-incomes" class="tab-pill rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">💵 Ingresos</button>
-      <button onclick="switchTab('expenses')" id="btn-expenses" class="tab-pill rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">🛒 Gastos</button>
-      <button onclick="switchTab('debts')" id="btn-debts" class="tab-pill rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">🚦 Mis Deudas</button>
-      <button onclick="switchTab('savings')" id="btn-savings" class="tab-pill rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">🐷 Plan Ahorro</button>
-      <button onclick="switchTab('loans')" id="btn-loans" class="tab-pill rounded-xl dark-card text-slate-400 px-4 py-2.5 text-xs font-bold whitespace-nowrap">🤝 Dinero Prestado</button>
-    </div>
+    <!-- CONTENIDO -->
+    <main class="flex-1 space-y-6">
 
-    <!-- MÓDULO 1: HOME / INSIGHTS -->
-    <div id="sec-home" class="tab-content space-y-4">
-      <div class="dark-card rounded-3xl p-5 flex items-center justify-between relative overflow-hidden">
-        <div class="absolute -right-8 -top-8 w-28 h-28 bg-purple-500/10 rounded-full blur-2xl pointer-events-none"></div>
-        <div>
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">Consumo Mensual</span>
-          <p class="text-2xl font-black text-white mt-1 tracking-tight" id="homeConsumedText">$0</p>
-          <p class="text-xs text-slate-400 mt-1">Disponible: <strong class="text-emerald-400" id="homeAvailText">$0</strong></p>
-          <div class="mt-3">
-            <span class="rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-[11px] font-bold text-emerald-400" id="homePaceText">Ritmo: $0/día</span>
+      <!-- HOME -->
+      <div id="sec-home" class="tab-content active-tab space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="glass-card rounded-3xl p-6">
+            <p class="text-[11px] font-bold text-slate-400 uppercase">Bolsillo 🏦 Banco</p>
+            <p class="text-3xl font-black text-emerald-400 mt-2" id="bankBalanceText">$0</p>
+          </div>
+          <div class="glass-card rounded-3xl p-6">
+            <p class="text-[11px] font-bold text-slate-400 uppercase">Bolsillo 💵 Efectivo</p>
+            <p class="text-3xl font-black text-emerald-400 mt-2" id="cashBalanceText">$0</p>
           </div>
         </div>
-        <div class="relative flex items-center justify-center w-24 h-24">
-          <canvas id="homeDonut" width="96" height="96"></canvas>
-          <div class="absolute text-center">
-            <span class="text-xs font-black text-purple-400" id="homePctText">0%</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-3">
-        <div class="dark-card rounded-2xl p-4 flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400 font-bold border border-emerald-500/20">💵</div>
+        <div class="glass-card rounded-3xl p-6 grid grid-cols-2 gap-4">
           <div>
-            <p class="text-[10px] uppercase font-bold text-slate-400">Ingresos</p>
-            <p class="text-sm font-black text-white mt-0.5" id="homeInc">$0</p>
+            <p class="text-xs text-slate-400 font-bold uppercase">Ingresos Reales</p>
+            <p class="text-xl font-black text-emerald-400 mt-1" id="homeInc">$0</p>
           </div>
-        </div>
-        <div class="dark-card rounded-2xl p-4 flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20">📌</div>
           <div>
-            <p class="text-[10px] uppercase font-bold text-slate-400">Gastos Fijos</p>
-            <p class="text-sm font-black text-white mt-0.5" id="homeFixed">$0</p>
+            <p class="text-xs text-slate-400 font-bold uppercase">Préstamos por Cobrar</p>
+            <p class="text-xl font-black text-blue-400 mt-1" id="homeLoansPending">$0</p>
           </div>
         </div>
-        <div class="dark-card rounded-2xl p-4 flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-400 font-bold border border-amber-500/20">🛍️</div>
+      </div>
+
+      <!-- INGRESOS -->
+      <div id="sec-incomes" class="tab-content space-y-6">
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Registrar Ingreso</h3>
+          <form onsubmit="addIncome(event)" class="space-y-3">
+            <input type="text" id="incDesc" placeholder="Concepto" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <input type="number" id="incAmount" placeholder="Monto COP" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <div class="grid grid-cols-2 gap-2">
+              <select id="incPocket" class="rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white">
+                <option value="bank">Banco</option>
+                <option value="cash">Efectivo</option>
+              </select>
+              <select id="incType" class="rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white">
+                <option value="real">Real / Propio</option>
+                <option value="bridge">Puente / Tercero</option>
+              </select>
+            </div>
+            <button type="submit" class="w-full glow-btn rounded-xl py-3 text-xs font-bold text-white">Guardar Ingreso</button>
+          </form>
+        </div>
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Historial de Ingresos</h3>
+          <div id="incomeList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- GASTOS -->
+      <div id="sec-expenses" class="tab-content space-y-6">
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Registrar Gasto</h3>
+          <form onsubmit="addExpense(event)" class="space-y-3">
+            <div class="grid grid-cols-2 gap-2">
+              <select id="expPocket" class="rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white">
+                <option value="bank">Banco</option>
+                <option value="cash">Efectivo</option>
+              </select>
+              <input type="date" id="expDate" required class="rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            </div>
+            <input type="text" id="expDesc" placeholder="Descripción" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <input type="number" id="expAmount" placeholder="Monto COP" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <button type="submit" class="w-full glow-btn rounded-xl py-3 text-xs font-bold text-white">Guardar Gasto</button>
+          </form>
+        </div>
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Consumos Registrados</h3>
+          <div id="expenseList" class="space-y-2"></div>
+        </div>
+      </div>
+
+      <!-- DEUDAS -->
+      <div id="sec-debts" class="tab-content space-y-6">
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Registrar Deuda Propia</h3>
+          <form onsubmit="addDebt(event)" class="space-y-3">
+            <input type="text" id="debtDesc" placeholder="¿A quién le debes?" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <input type="number" id="debtAmount" placeholder="Monto Total COP" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <button type="submit" class="w-full glow-btn rounded-xl py-3 text-xs font-bold text-white">Registrar Deuda</button>
+          </form>
+        </div>
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Control de Mis Deudas</h3>
+          <div id="debtList" class="space-y-3"></div>
+        </div>
+      </div>
+
+      <!-- POR COBRAR -->
+      <div id="sec-loans" class="tab-content space-y-6">
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Registrar Dinero Prestado</h3>
+          <form onsubmit="addLoan(event)" class="space-y-3">
+            <input type="text" id="loanPerson" placeholder="Deudor" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <input type="number" id="loanAmount" placeholder="Monto Total COP" required class="w-full rounded-xl bg-black/40 border border-slate-700 p-3 text-xs text-white" />
+            <button type="submit" class="w-full glow-btn rounded-xl py-3 text-xs font-bold text-white">Registrar Préstamo</button>
+          </form>
+        </div>
+        <div class="glass-card rounded-3xl p-6">
+          <h3 class="text-sm font-bold text-white mb-4">Préstamos por Cobrar</h3>
+          <div id="loanList" class="space-y-3"></div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    let state = {
+      bankBalanceFixed: 57172,
+      cashBalanceFixed: 26000,
+      incomes: [
+        { desc: "Nómina Dispapeles S.A.S.", amount: 759600, pocket: "bank", type: "real" },
+        { desc: "Intereses Ahorros", amount: 1, pocket: "bank", type: "real" },
+        { desc: "Abono Deuda Juan David", amount: 100000, pocket: "bank", type: "real" },
+        { desc: "Operación Puente Henry (Efectivo)", amount: 500000, pocket: "bank", type: "bridge" },
+        { desc: "Operación Puente Henry (Transferencia)", amount: 500000, pocket: "cash", type: "bridge" },
+        { desc: "Operación Puente Ivan (Arriendo)", amount: 280000, pocket: "bank", type: "bridge" },
+        { desc: "Efectivo entregado por Ivan", amount: 70000, pocket: "cash", type: "bridge" },
+        { desc: "Operación Puente Juan David (Efectivo)", amount: 100000, pocket: "bank", type: "bridge" },
+        { desc: "Operación Puente Juan David (Transferencia)", amount: 100000, pocket: "cash", type: "bridge" },
+        { desc: "Recolecta Nequi (Terceros)", amount: 30300, pocket: "bank", type: "bridge" }
+      ],
+      expenses: [
+        { desc: "Arriendo (Tu 50% en efectivo)", amount: 350000, pocket: "cash", date: "2026-11-10" },
+        { desc: "Arriendo (Parte Ivan en efectivo)", amount: 350000, pocket: "cash", date: "2026-11-10" },
+        { desc: "Factura plan celular (Wompi)", amount: 57464, pocket: "bank", date: "2026-11-10" },
+        { desc: "Pago deuda a Mamá", amount: 200000, pocket: "bank", date: "2026-11-12" },
+        { desc: "Pago préstamo a Hermana", amount: 20000, pocket: "bank", date: "2026-11-11" },
+        { desc: "Invitación cumpleaños Juan David", amount: 41600, pocket: "bank", date: "2026-11-12" },
+        { desc: "Cuota propia en recolecta Nequi", amount: 15700, pocket: "bank", date: "2026-11-11" },
+        { desc: "Suscripción Plan Bancario", amount: 2453, pocket: "bank", date: "2026-11-12" },
+        { desc: "Compra D1 (Aseo)", amount: 77050, pocket: "cash", date: "2026-11-11" },
+        { desc: "Pasabocas", amount: 19500, pocket: "cash", date: "2026-11-11" },
+        { desc: "Jugo de almuerzo", amount: 4000, pocket: "cash", date: "2026-11-11" }
+      ],
+      debts: [
+        { desc: "Mamá", amount: 200000, payments: [{ amount: 200000 }] },
+        { desc: "Hermana", amount: 20000, payments: [{ amount: 20000 }] }
+      ],
+      loans: [
+        { person: "Juan David", totalAmount: 300000, payments: [{ amount: 50000 }, { amount: 100000 }] }
+      ]
+    };
+
+    function unlockApp() {
+      const pin = document.getElementById("pinInput").value;
+      if (pin === "1234") {
+        document.getElementById("pinScreen").style.display = "none";
+        document.getElementById("mainApp").classList.remove("hidden");
+        renderAll();
+      } else {
+        document.getElementById("pinError").classList.remove("hidden");
+      }
+    }
+
+    function lockApp() {
+      document.getElementById("mainApp").classList.add("hidden");
+      document.getElementById("pinScreen").style.display = "flex";
+      document.getElementById("pinInput").value = "";
+    }
+
+    function switchTab(tab) {
+      ['home', 'incomes', 'expenses', 'debts', 'loans'].forEach(t => {
+        document.getElementById(`sec-${t}`).classList.remove('active-tab');
+        document.getElementById(`btn-${t}`).classList.remove('active');
+      });
+      document.getElementById(`sec-${tab}`).classList.add('active-tab');
+      document.getElementById(`btn-${tab}`).classList.add('active');
+    }
+
+    const formatCOP = (val) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', maximumFractionDigits: 0 }).format(val);
+
+    function renderAll() {
+      let bank = state.bankBalanceFixed;
+      let cash = state.cashBalanceFixed;
+      let incReal = 0;
+      let totalLoansPending = 0;
+
+      state.incomes.forEach(i => {
+        if (i.type !== 'bridge') incReal += i.amount;
+      });
+
+      state.loans.forEach(l => {
+        let paid = (l.payments || []).reduce((a, b) => a + b.amount, 0);
+        totalLoansPending += Math.max(0, l.totalAmount - paid);
+      });
+
+      document.getElementById("bankBalanceText").innerText = formatCOP(bank);
+      document.getElementById("cashBalanceText").innerText = formatCOP(cash);
+      document.getElementById("homeInc").innerText = formatCOP(incReal);
+      document.getElementById("homeLoansPending").innerText = formatCOP(totalLoansPending);
+
+      document.getElementById("incomeList").innerHTML = state.incomes.map((i, idx) => `
+        <div class="flex justify-between items-center bg-black/30 p-3 rounded-xl text-xs">
           <div>
-            <p class="text-[10px] uppercase font-bold text-slate-400">Variables</p>
-            <p class="text-sm font-black text-white mt-0.5" id="homeVar">$0</p>
+            <p class="font-bold text-white">${i.desc}</p>
+            <span class="text-[9px] text-slate-400 uppercase">${i.pocket} • ${i.type}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-emerald-400 font-bold">+${formatCOP(i.amount)}</span>
+            <button onclick="removeIncome(${idx})" class="text-slate-500 hover:text-rose-400">✕</button>
           </div>
         </div>
-        <div class="dark-card rounded-2xl p-4 flex items-center space-x-3">
-          <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400 font-bold border border-blue-500/20">🤝</div>
+      `).join('');
+
+      document.getElementById("expenseList").innerHTML = state.expenses.map((e, idx) => `
+        <div class="flex justify-between items-center bg-black/30 p-3 rounded-xl text-xs">
           <div>
-            <p class="text-[10px] uppercase font-bold text-slate-400">Por Cobrar</p>
-            <p class="text-sm font-black text-blue-400 mt-0.5" id="homeLoansPending">$0</p>
+            <p class="font-bold text-white">${e.desc}</p>
+            <span class="text-[9px] text-slate-400 uppercase">${e.pocket} • ${e.date}</span>
+          </div>
+          <div class="flex items-center space-x-2">
+            <span class="text-rose-400 font-bold">-${formatCOP(e.amount)}</span>
+            <button onclick="removeExpense(${idx})" class="text-slate-500 hover:text-rose-400">✕</button>
           </div>
         </div>
-      </div>
+      `).join('');
 
-      <div class="dark-card rounded-3xl p-5">
-        <div class="flex items-center justify-between mb-3">
-          <h3 class="text-xs font-bold uppercase text-slate-300 tracking-wider">Flujo de Gastos Semanal</h3>
-          <span class="text-[10px] text-purple-400 font-bold">Promedio COP</span>
-        </div>
-        <div class="h-36">
-          <canvas id="homeBarChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- MÓDULO 2: INGRESOS -->
-    <div id="sec-incomes" class="tab-content hidden space-y-4">
-      <div class="dark-card rounded-3xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3">Registrar Fuente de Ingreso</h3>
-        <form onsubmit="addIncome(event)" class="space-y-3">
-          <input type="text" id="incDesc" placeholder="Concepto (ej. Salario, Prima, Extra)" required class="w-full rounded-2xl border border-slate-700 bg-[#0a0c10] px-4 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-          <input type="number" id="incAmount" placeholder="Monto COP" required class="w-full rounded-2xl border border-slate-700 bg-[#0a0c10] px-4 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-          <button type="submit" class="w-full rounded-2xl bg-emerald-600 py-3 text-xs font-bold text-white hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 transition active:scale-98">＋ Agregar Ingreso</button>
-        </form>
-      </div>
-      <div class="dark-card rounded-3xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3">Historial de Ingresos</h3>
-        <div id="incomeList" class="space-y-2"></div>
-      </div>
-    </div>
-
-    <!-- MÓDULO 3: GASTOS -->
-    <div id="sec-expenses" class="tab-content hidden space-y-4">
-      <div class="dark-card rounded-3xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3">Registrar Consumo / Gasto</h3>
-        <form onsubmit="addExpense(event)" class="space-y-3">
-          <div class="grid grid-cols-2 gap-2">
-            <select id="expType" class="rounded-2xl border border-slate-700 bg-[#0a0c10] px-3 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition">
-              <option value="variable">Gasto Variable</option>
-              <option value="fixed">Gasto Fijo</option>
-            </select>
-            <input type="date" id="expDate" required class="rounded-2xl border border-slate-700 bg-[#0a0c10] px-3 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
+      document.getElementById("debtList").innerHTML = state.debts.map((d, idx) => {
+        let paid = (d.payments || []).reduce((a, b) => a + b.amount, 0);
+        let bal = Math.max(0, d.amount - paid);
+        let isPaid = bal === 0;
+        return `
+          <div class="bg-black/30 p-3 rounded-xl text-xs space-y-1">
+            <div class="flex justify-between font-bold text-white"><span>📌 ${d.desc}</span><button onclick="removeDebt(${idx})" class="text-slate-500">✕</button></div>
+            <div class="flex justify-between text-slate-400"><span>Total: ${formatCOP(d.amount)}</span><span>Debe: <strong class="${isPaid ? 'text-emerald-400' : 'text-rose-400'}">${formatCOP(bal)}</strong></span></div>
+            <div class="flex justify-end pt-1">${isPaid ? '<span class="text-emerald-400 font-bold text-[10px]">🟢 Pagado</span>' : `<button onclick="addPaymentToDebt(${idx})" class="glow-btn px-3 py-1 rounded-lg text-[10px] font-bold text-white">➕ Abonar</button>`}</div>
           </div>
-          <input type="text" id="expDesc" placeholder="Descripción (ej. Almuerzo, Mercado, Arriendo)" required class="w-full rounded-2xl border border-slate-700 bg-[#0a0c10] px-4 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-          <input type="number" id="expAmount" placeholder="Monto COP" required class="w-full rounded-2xl border border-slate-700 bg-[#0a0c10] px-4 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-          <button type="submit" class="w-full rounded-2xl bg-purple-600 py-3 text-xs font-bold text-white hover:bg-purple-500 shadow-lg shadow-purple-600/20 transition active:scale-98">Guardar Gasto</button>
-        </form>
-      </div>
+        `;
+      }).join('');
 
-      <div class="grid grid-cols-2 gap-2">
-        <button onclick="filterExpenses('all')" class="rounded-xl dark-card py-2 text-xs font-bold text-white hover:border-purple-500/40 transition">Todos</button>
-        <button onclick="filterExpenses('fixed')" class="rounded-xl dark-card py-2 text-xs font-bold text-rose-400 hover:border-rose-500/40 transition">Solo Fijos</button>
-      </div>
+      document.getElementById("loanList").innerHTML = state.loans.map((l, idx) => {
+        let paid = (l.payments || []).reduce((a, b) => a + b.amount, 0);
+        let bal = Math.max(0, l.totalAmount - paid);
+        let isPaid = bal === 0;
+        return `
+          <div class="bg-black/30 p-3 rounded-xl text-xs space-y-1">
+            <div class="flex justify-between font-bold text-white"><span>👤 ${l.person}</span><button onclick="removeLoan(${idx})" class="text-slate-500">✕</button></div>
+            <div class="flex justify-between text-slate-400"><span>Inicial: ${formatCOP(l.totalAmount)}</span><span>Saldo: <strong class="${isPaid ? 'text-emerald-400' : 'text-blue-400'}">${formatCOP(bal)}</strong></span></div>
+            <div class="flex justify-end pt-1">${isPaid ? '<span class="text-emerald-400 font-bold text-[10px]">✅ Liquidado</span>' : `<button onclick="addPaymentToLoan(${idx})" class="glow-btn px-3 py-1 rounded-lg text-[10px] font-bold text-white">💵 Abono Recibido</button>`}</div>
+          </div>
+        `;
+      }).join('');
+    }
 
-      <div class="dark-card rounded-3xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3">Lista de Consumos</h3>
-        <div id="expenseList" class="space-y-2 max-h-64 overflow-y-auto pr-1"></div>
-      </div>
-    </div>
+    function addIncome(e) {
+      e.preventDefault();
+      state.incomes.push({ desc: document.getElementById("incDesc").value, amount: parseFloat(document.getElementById("incAmount").value) || 0, pocket: document.getElementById("incPocket").value, type: document.getElementById("incType").value });
+      document.getElementById("incDesc").value = ""; document.getElementById("incAmount").value = "";
+      renderAll();
+    }
+    function removeIncome(i) { state.incomes.splice(i, 1); renderAll(); }
 
-    <!-- MÓDULO 4: PLAN DE DEUDAS -->
-    <div id="sec-debts" class="tab-content hidden space-y-4">
-      <div class="dark-card rounded-3xl p-5">
-        <h3 class="text-sm font-bold text-white mb-3">Agregar Obligación / Deuda Que Debo</h3>
-        <form onsubmit="addDebt(event)" class="space-y-3">
-          <input type="text" id="debtDesc" placeholder="Entidad / Concepto (ej. Banco, Tarjeta)" required class="w-full rounded-2xl border border-slate-700 bg-[#0a0c10] px-4 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-          <div class="grid grid-cols-2 gap-2">
-            <input type="number" id="debtAmount" placeholder="Cuota Mensual" required class="rounded-2xl border border-slate-700 bg-[#0a0c10] px-3 py-3 text-xs text-white focus:border-purple-500 focus:outline-none transition" />
-            <input type="number" id="debtDay" min="1" max="31" placeholder="Día Pago (1-31)" required class="rounded-2xl border border-slate-700 bg-[#0a0c10] px-3 py-3 text-xs text-white focus:border-purple-500 focus:outline
+    function addExpense(e) {
+      e.preventDefault();
+      state.expenses.unshift({ desc: document.getElementById("expDesc").value, amount: parseFloat(document.getElementById("expAmount").value) || 0, pocket: document.getElementById("expPocket").value, date: document.getElementById("expDate").value });
+      document.getElementById("expDesc0").value = ""; document.getElementById("expAmount").value = "";
+      renderAll();
+    }
+    function removeExpense(i) { state.expenses.splice(i, 1); renderAll(); }
+
+    function addDebt(e) {
+      e.preventDefault();
+      state.debts.push({ desc: document.getElementById("debtDesc").value, amount: parseFloat(document.getElementById("debtAmount").value) || 0, payments: [] });
+      document.getElementById("debtDesc").value = ""; document.getElementById("debtAmount").value = "";
+      renderAll();
+    }
+    function addPaymentToDebt(idx) {
+      let amt = prompt("Monto del abono (COP):");
+      if (amt && !isNaN(amt)) { state.debts[idx].payments.push({ amount: parseFloat(amt) }); renderAll(); }
+    }
+    function removeDebt(i) { state.debts.splice(i, 1); renderAll(); }
+
+    function addLoan(e) {
+      e.preventDefault();
+      state.loans.unshift({ person: document.getElementById("loanPerson").value, totalAmount: parseFloat(document.getElementById("loanAmount").value) || 0, payments: [] });
+      document.getElementById("loanPerson").value = ""; document.getElementById("loanAmount").value = "";
+      renderAll();
+    }
+    function addPaymentToLoan(idx) {
+      let amt = prompt("Monto del abono recibido (COP):");
+      if (amt && !isNaN(amt)) { state.loans[idx].payments.push({ amount: parseFloat(amt) }); renderAll(); }
+    }
+    function removeLoan(i) { state.loans.splice(i, 1); renderAll(); }
+
+    document.getElementById("expDate").value = new Date().toISOString().split('T')[0];
+  </script>
+</body>
+</html>
